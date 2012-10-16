@@ -47,7 +47,7 @@ bool net::GenHead::writeToBuffer(void *buffer, uint32_t len, uint32_t& wlen) con
     return true;
 }
 
-bool net::GenHead::readFromBuffer(void *buffer, uint32_t len) {
+bool net::GenHead::readFromBuffer(const void *buffer, uint32_t len) {
     if(NULL == buffer) {
         return false;
     }
@@ -84,7 +84,7 @@ bool net::GenHead::readFromBuffer(void *buffer, uint32_t len) {
 }
 
 // TODO check flags usage
-bool net::GenHead::writeToSock(int sock, void *buffer, size_t len, int flags) {
+bool net::GenHead::writeToSock(int sock, const void *buffer, size_t len, int flags) {
     
     if(NULL == buffer) {
         return false;

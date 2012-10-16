@@ -63,10 +63,10 @@ public:
     bool writeToBuffer(void *buffer, size_t len, size_t& wlen) const;
 
     /* read GenHead from string */
-    bool readFromBuffer(void *buffer, size_t len);
+    bool readFromBuffer(const void *buffer, size_t len);
 
     /* write object to tcp socket */
-    bool writeToSock(int sock, void *buffer, size_t len, int flags);
+    bool writeToSock(int sock, const void *buffer, size_t len, int flags);
 
     /* read object from tcp socket */
     bool readFromSock(int sock, void *buffer, size_t len, size_t &rlen, int flags);
