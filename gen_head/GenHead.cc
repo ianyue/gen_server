@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <endian.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -132,14 +133,18 @@ failed:
 }
 
 // TODO timeout
-bool net::GenHead::readFromSock(int sock, void *buffer, size_t len, size_t &rlen, int flags) {
+// TODO need error code and retcode
+int net::GenHead::readFromSock(int sock, void *buffer, size_t len, size_t &rlen, int flags) {
+    
+    // clear errno
+    errno = 0;
 
     if(NULL == buffer) {
-        return false;
+        return -1;
     }
 
     if(len <= 0) {
-        return false;
+        return -1;
     }
 
     char head_buf[sizeof(_head_t)];
@@ -150,7 +155,12 @@ bool net::GenHead::readFromSock(int sock, void *buffer, size_t len, size_t &rlen
     while(left_bytes > 0) {
         size_t recv_bytes = recv(sock, head_buf + total_recv_bytes, left_bytes, flags);
         if(recv_bytes < 0) {
-            return false;
+            return -1;
+        }
+
+        if(0 == recv_bytes) {
+            // socket closed
+            return 0;
         }
 
         left_bytes -= recv_bytes;
@@ -158,16 +168,16 @@ bool net::GenHead::readFromSock(int sock, void *buffer, size_t len, size_t &rlen
     }
 
     if(readFromBuffer(head_buf, sizeof(_head_t)) ==  false) {
-        return false;
+        return -1;
     }
 
     if(_head_t.body_length < 0) {
-        
+        return -1;
     }
 
     if(len < _head_t.body_length) {
         // buffer too small
-        return false;
+        return -1;
     }
     left_bytes = _head_t.body_length;
     total_recv_bytes = 0;
@@ -175,7 +185,11 @@ bool net::GenHead::readFromSock(int sock, void *buffer, size_t len, size_t &rlen
     while(left_bytes > 0) {
         size_t recv_bytes = recv(sock, (char *)buffer + total_recv_bytes, left_bytes, flags);
         if(recv_bytes < 0) {
-            return false;
+            return -1;
+        }
+
+        if(0 == recv_bytes) {
+            return 0;
         }
 
         left_bytes -= recv_bytes;
@@ -183,6 +197,6 @@ bool net::GenHead::readFromSock(int sock, void *buffer, size_t len, size_t &rlen
     }
 
     rlen = _head_t.body_length;
-    return true;
+    return sizeof(_head_t) + _head_t.body_length;
 }
 

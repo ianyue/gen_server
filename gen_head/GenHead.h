@@ -69,7 +69,7 @@ public:
     bool writeToSock(int sock, const void *buffer, size_t len, int flags);
 
     /* read object from tcp socket */
-    bool readFromSock(int sock, void *buffer, size_t len, size_t &rlen, int flags);
+    int readFromSock(int sock, void *buffer, size_t len, size_t &rlen, int flags);
 
     static uint32_t headSize() { return sizeof(gen_head_t); }
 
