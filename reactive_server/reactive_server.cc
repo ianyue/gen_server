@@ -85,7 +85,6 @@ int net::ReactiveServer::run(int port) {
             // TODO use sockaddr
             if(NET_DEBUG) cout << "begin to accept" << endl;
 
-            sleep(1);
             if((connect_fd = accept(listen_fd, (struct sockaddr *)NULL, NULL)) == -1) {
                 // TODO check errno, (non-block accept)
                 // non-block timeout
