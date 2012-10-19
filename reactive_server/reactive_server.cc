@@ -127,11 +127,9 @@ int net::ReactiveServer::run(int port) {
             if(sock_fds[i] < 0) continue; // invalid sock
 
             if(FD_ISSET(sock_fds[i], &read_fds)) {
-                // process data
-                net::GenHead head;
+                // process raw data
                 size_t recv_len;
-                int r_ret = head.readFromSock(sock_fds[i], (void *) buffer, 1024, recv_len, 0); // TODO buffer size
-
+                int r_ret = processRawData(sock_fds[i], (void *) buffer, 1024, recv_len, 0); // TODO buffer size
 
                 // if socket close, should fd clr socket from monitor_fds
                 if(0 == r_ret) {
@@ -168,6 +166,14 @@ int net::ReactiveServer::run(int port) {
         
     } // end while(1)
     close(listen_fd);
+}
+
+// using gen_head for socket package
+int net::ReactiveServer::processRawData(int sock_fd, void *buffer, size_t len, size_t &recv_len, int flags) {
+
+    net::GenHead head;
+
+    return head.readFromSock(sock_fd, buffer, len, recv_len, flags);
 }
 
 void net::ReactiveServer::processData(void *buffer, int len) {

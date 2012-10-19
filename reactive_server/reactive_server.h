@@ -8,8 +8,13 @@ public:
     ReactiveServer() {}
 
     int run(int);
-    
-    void processData(void *buffer, int len);
+
+protected:
+
+    virtual int processRawData(int sock_fd, void *buffer, size_t len, size_t &recv_len, int flags);
+
+    virtual void processData(void *buffer, int len);
+
 
 private:
 
