@@ -20,8 +20,8 @@ int net::ReactiveServer::run(int port) {
     int listen_fd, connect_fd, max_fd = 0;
     int sock_fds[FD_SETSIZE];
     
-    struct fd_set monitor_fds, read_fds;
-    struct timeval timeout = {3, 0}; // TODO read from conf
+    fd_set monitor_fds, read_fds;
+    struct timeval timeout;
     
     char buffer[1024]; // TODO buffer size
     //int port = 18321; // TODO read from conf
@@ -66,6 +66,11 @@ int net::ReactiveServer::run(int port) {
     max_fd = max(max_fd, listen_fd);
     while(1) {
         read_fds = monitor_fds;
+        
+        // fix linux select will modify timeout
+        // TODO read from conf
+        timeout.tv_sec = 3;
+        timeout.tv_usec = 0;
 
         int ret = select(max_fd + 1, &read_fds, NULL, NULL, &timeout);
 
